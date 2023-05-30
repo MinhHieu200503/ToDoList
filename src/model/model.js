@@ -20,14 +20,8 @@ const worksSchema = new mongoose.Schema({
     },
     "works":[
         {
-            "time":{
-                "type":Date,
-
-            },
-            "work":{
-                "type":String   ,
-                
-            }
+            "time":Date,
+            "work":String
         }
     ]
 })

@@ -6,7 +6,7 @@ const workController = {
         try {
             
             const find = await ToDoList.findById(req.params.idList);
-            console.log(find)
+            
             if(find ===null){
                 res.status(404).json("wrong id to do list");
                 return 
@@ -16,10 +16,35 @@ const workController = {
             res.status(500).json("wrong type object to do list")
         }
     },
+    configTime:async(req,res,next)=>{ //=> config hh:mm
+        try {
+            let configTime = req.body.works.map(async(work)=>{
+                let time = work.time.split(":");
+                //check time format hh:mm with h >=0 and <=23&&mm>=0 and <=59
+                if(!(Number(time[0])>=0&&time[0]<=23&&time[1]>=0&&time[1]<=59)){
+                    res.status(500).json("wrong time format hh:mm");
+                    return
+                }
+                
+                let newTime = new Date(req.body.date);
+                newTime.setHours(time[0]);
+                newTime.setMinutes(time[1])
+                return newTime
+            })
+            for(let i = 0;i<configTime.length;i++){
+                req.body.works[i].time = configTime[i]
+                
+            }
+            next()
+        } catch (error) {
+            res.status(500).json("error config time")
+            return 
+        }
+    },
     addWorks: async(req,res)=>{
         try {
             const newDate = await Works.insertMany({"date":req.body.date,"works":req.body.works});
-            console.log(newDate[0]._id)
+           
             await ToDoList.updateOne({_id:req.params.idList},{$push:{dates:newDate[0]._id}})
             res.status(200).json(newDate)
         } catch (error) {
