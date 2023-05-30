@@ -4,8 +4,8 @@ name: String,
 Date: array Object DATE ===> a Date{
                                 date:Date
                                 works:  object(){
-                                    key:Time,
-                                    value:String
+                                    key:Time ==> array
+                                    value:String ==> array
                                 }     
                             }
 

@@ -18,10 +18,18 @@ const worksSchema = new mongoose.Schema({
         "type":Date,
         default:Date.now
     },
-    "works":{
-        "time":[Date],
-        "work":[String]
-    }
+    "works":[
+        {
+            "time":{
+                "type":Date,
+
+            },
+            "work":{
+                "type":String   ,
+                
+            }
+        }
+    ]
 })
 
 const Works = mongoose.model("works",worksSchema);
