@@ -3,6 +3,7 @@ const {Works,ToDoList} = require("../model/model.js");
 const { json } = require("body-parser");
 
 const workController = {
+    // middleware check idList
     checkIdList:async(req,res,next)=>{
         try {
             
@@ -17,6 +18,7 @@ const workController = {
             res.status(500).json("wrong type object to do list")
         }
     },
+    // middleware config time in work: input:hh:mm => output:yyyy/mm/ddThh:mm:ssZ
     configTime:async(req,res,next)=>{ //=> config hh:mm
         try {
             let configTime = req.body.works.map((work)=>{
@@ -43,6 +45,7 @@ const workController = {
             return 
         }
     },
+    // [POST] ADate(date,works[time,work])
     addWorks: async(req,res)=>{
         try {
             const newDate = await Works.insertMany({"date":req.body.date,"works":req.body.works});
@@ -52,6 +55,7 @@ const workController = {
             res.status(500).json(error + "\nadd works wrong")
         }
     },
+    //[GET] (params:idList)
     getAllWorksOnDate:async(req,res)=>{
         try {
             const toDoList = await ToDoList.findById(req.params.idList).populate("dates");            
@@ -61,6 +65,7 @@ const workController = {
             res.status(500).json("error")
         }
     },
+    // [GET]
     getAllWork:async(req,res)=>{
         try {
            const list = await ToDoList.find().populate("dates")
@@ -80,9 +85,19 @@ const workController = {
             await ToDoList.updateOne({_id:req.params.idList},{$pull:{dates:req.params.idDate}})
             res.status(200).json(result)
         } catch (error) {
-            res.status(500).json(error+ " \nerror")
+            res.status(500).json(error+ " \nerror delete a date")
+        }
+    },
+    // [DELETE] a work(params:idDate,params:idWork)
+    deleteAWork:async(req,res)=>{
+        try {
+            const result = await Works.updateOne({_id:req.params.idDate},{$pull:{works:{_id:req.params.idWork}}})
+            res.status(200).json(result)
+        } catch (error) {
+            res.status(500).json(error+ " \nerror delete a work")
         }
     }
+    
 }
 
 module.exports = workController
