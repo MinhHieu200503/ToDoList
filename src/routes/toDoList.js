@@ -16,8 +16,11 @@ router.delete("/:idList/:idDate",WorksController.checkIdList,WorksController.del
 //*deleteAWork => params(:idList/:idDate/:idWork)
 router.delete("/:idList/:idDate/:idWork",WorksController.checkIdList,WorksController.deleteAWork)
 
-//#[UPDATE]
-
+//#[PUT]
+//*updateName => params(:idList/:name)
+router.put("/:idList/updateName",WorksController.checkIdList,WorksController.updateName)
+//*update A Date => params(:idList/:idDate)
+router.put("/:idList/:idDate",WorksController.checkIdList,WorksController.configTime,WorksController.updateDate)
 //# [GET]
 //*getAllWorksOnDate => params(:idList)
 router.get("/:idList/works",WorksController.checkIdList,WorksController.getAllWorksOnDate);

@@ -38,7 +38,7 @@ const workController = {
             for(let i = 0;i<configTime.length;i++){
                 req.body.works[i].time = configTime[i]
             }
-            console.log(`${JSON.stringify(req.body.works)} `)
+            
             next()
         } catch (error) {
             res.status(500).json("error config time")
@@ -95,6 +95,23 @@ const workController = {
             res.status(200).json(result)
         } catch (error) {
             res.status(500).json(error+ " \nerror delete a work")
+        }
+    },
+    updateName:async(req,res)=>{
+        try {
+            const result = await ToDoList.updateOne({_id:req.params.idList},{$set:{name:req.body.name}})
+            res.status(200).json(result);
+        } catch (error) {
+            res.status(500).json(error+ " \nerror updateName");
+        }
+    },
+    updateDate:async(req,res)=>{
+        try {
+            const result = await Works.updateOne({_id:req.params.idDate},{$set:req.body})
+            res.status(200).json(`req.body: ${req.body}
+            result:${result}`)
+        } catch (error) {
+            res.status(500).json(error+ " \nerror updateDate");
         }
     }
     
