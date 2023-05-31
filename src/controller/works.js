@@ -24,17 +24,26 @@ const workController = {
             let configTime = req.body.works.map((work)=>{
                 let time = work.time.split(":");
                 //check time format hh:mm with h >=0 and <=23&&mm>=0 and <=59
-                if(!(Number(time[0])>=0&&time[0]<=23&&time[1]>=0&&time[1]<=59)){
-                    res.status(500).json("wrong time format hh:mm");
-                    return 
+                function checkTime(time){
+                    if(!(Number(time[0])>=0&&time[0]<=23&&time[1]>=0&&time[1]<=59)){
+                        return false
+                    }
                 }
-                
+                if(checkTime(time)===false){
+                    
+                    return false
+                }
                 let newTime = new Date(req.body.date);
                 newTime.setHours(time[0]);
                 newTime.setMinutes(time[1])
                 return newTime
             })
             
+            if(configTime.includes(false)){
+                res.status(500).json("wrong time format hh:mm");
+                return 
+            }
+
             for(let i = 0;i<configTime.length;i++){
                 req.body.works[i].time = configTime[i]
             }
@@ -97,6 +106,7 @@ const workController = {
             res.status(500).json(error+ " \nerror delete a work")
         }
     },
+    // [PUT] update name of list (params(idList),json.name)
     updateName:async(req,res)=>{
         try {
             const result = await ToDoList.updateOne({_id:req.params.idList},{$set:{name:req.body.name}})
@@ -105,6 +115,7 @@ const workController = {
             res.status(500).json(error+ " \nerror updateName");
         }
     },
+    // [PUT] update a date of list (params(idList),json.date)
     updateDate:async(req,res)=>{
         try {
             const result = await Works.updateOne({_id:req.params.idDate},{$set:req.body})
