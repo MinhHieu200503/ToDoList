@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const {Works,ToDoList} = require("../model/model.js");
+const { json } = require("body-parser");
 
 const workController = {
     checkIdList:async(req,res,next)=>{
@@ -18,12 +19,12 @@ const workController = {
     },
     configTime:async(req,res,next)=>{ //=> config hh:mm
         try {
-            let configTime = req.body.works.map(async(work)=>{
+            let configTime = req.body.works.map((work)=>{
                 let time = work.time.split(":");
                 //check time format hh:mm with h >=0 and <=23&&mm>=0 and <=59
                 if(!(Number(time[0])>=0&&time[0]<=23&&time[1]>=0&&time[1]<=59)){
                     res.status(500).json("wrong time format hh:mm");
-                    return
+                    return 
                 }
                 
                 let newTime = new Date(req.body.date);
@@ -31,10 +32,11 @@ const workController = {
                 newTime.setMinutes(time[1])
                 return newTime
             })
+            
             for(let i = 0;i<configTime.length;i++){
                 req.body.works[i].time = configTime[i]
-                
             }
+            console.log(`${JSON.stringify(req.body.works)} `)
             next()
         } catch (error) {
             res.status(500).json("error config time")
@@ -44,11 +46,10 @@ const workController = {
     addWorks: async(req,res)=>{
         try {
             const newDate = await Works.insertMany({"date":req.body.date,"works":req.body.works});
-           
             await ToDoList.updateOne({_id:req.params.idList},{$push:{dates:newDate[0]._id}})
             res.status(200).json(newDate)
         } catch (error) {
-            res.status(500).json(error)
+            res.status(500).json(error + "\nadd works wrong")
         }
     },
     getAllWorksOnDate:async(req,res)=>{
@@ -69,6 +70,17 @@ const workController = {
            res.status(200).json(newDates) 
         } catch (error) {
             res.status(500).json("error")
+        }
+    },
+    // [DELETE] a date(idList,idDate)
+    deleteADate:async(req,res)=>{
+        try {
+            
+            const result = await Works.findByIdAndDelete(req.params.idDate); 
+            await ToDoList.updateOne({_id:req.params.idList},{$pull:{dates:req.params.idDate}})
+            res.status(200).json(result)
+        } catch (error) {
+            res.status(500).json(error+ " \nerror")
         }
     }
 }
