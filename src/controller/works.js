@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const {Works,ToDoList} = require("../model/model.js");
 const { json } = require("body-parser");
+const { query } = require("express");
 
 const workController = {
     // middleware check idList
@@ -43,7 +44,6 @@ const workController = {
                 res.status(500).json("wrong time format hh:mm");
                 return 
             }
-
             for(let i = 0;i<configTime.length;i++){
                 req.body.works[i].time = configTime[i]
             }
@@ -106,6 +106,19 @@ const workController = {
             res.status(500).json(error+ " \nerror delete a work")
         }
     },
+    deleteAList:async(req,res)=>{
+        try {
+            const toDoList = await ToDoList.findById(req.params.idList);
+            toDoList.dates.map(async(toDo)=>{
+                await Works.findByIdAndDelete(toDo)
+            })
+
+            const result = await ToDoList.findByIdAndDelete(req.params.idList);
+            res.status(200).json(result)
+        } catch (error) {
+            res.status(500).json(error+ " \nerror delete a to do list")
+        }
+    },
     // [PUT] update name of list (params(idList),json.name)
     updateName:async(req,res)=>{
         try {
@@ -124,6 +137,12 @@ const workController = {
         } catch (error) {
             res.status(500).json(error+ " \nerror updateDate");
         }
+    },
+    testQuery:(req,res)=>{
+        console.log(req.query);
+        const arr = req.query.age.split(",")
+        console.log(arr);
+        res.status(200).json(req.query)
     }
     
 }

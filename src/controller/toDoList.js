@@ -4,15 +4,25 @@ const ToDoListController ={
         // (POST) => (name)
         try {
             const newToList = await ToDoList.insertMany({name:req.body.name}) 
-            res.status(200).json(newToList);
+            res.status(200).render("messCreate",{
+                "pageTitle":"Status",
+                "status":`Tạo thành công
+                To do list: ${JSON.stringify(req.body)}`
+            });
         } catch (error) {
-            res.status(500).json(error);
+            res.status(500).render("messCreate",{
+                "pageTitle":"Status",
+                "status":`Thất bại`
+            });
         }        
     },
     getAllToDoList:async(req,res)=>{
         try {
             const list = await ToDoList.find();
-            res.status(200).json(list)
+            res.status(200).render("home",{
+                "list":list,
+                "pageTitle":"Home Page"
+            })
         } catch (error) {
             res.status(500).res.json(error)           
         }

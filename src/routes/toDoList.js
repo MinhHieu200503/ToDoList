@@ -2,6 +2,10 @@ const router = require("express").Router();
 const ToDoListController = require("../controller/toDoList.js");
 const WorksController = require("../controller/works.js")
 
+//test
+router.post("/allWorks/test",WorksController.testQuery);
+
+
 // routes /allworks
 router.get("/allWorks",WorksController.getAllWork);
 
@@ -13,6 +17,7 @@ router.post("/:idList/works",WorksController.checkIdList,WorksController.configT
 //# [DELETE]
 //*deleteADate => params(:idList/:idDate)
 router.delete("/:idList/:idDate",WorksController.checkIdList,WorksController.deleteADate);
+router.delete("/:idList",WorksController.deleteAList)
 //*deleteAWork => params(:idList/:idDate/:idWork)
 router.delete("/:idList/:idDate/:idWork",WorksController.checkIdList,WorksController.deleteAWork)
 
