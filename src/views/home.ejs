@@ -5,25 +5,49 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/style.css">
     <title>
         <%=pageTitle%>
     </title>
 </head>
 
 <body>
-    <form action="/toDoList" method="post">
+    <div id="container">
         <h3 class="formTitle">
             Tạo To Do List
         </h3>
-        <div>
-            <h3>Tên To Do List</h3>
-            <input type="text" id="name" name="name">
-        </div>
-        <button type="submit">Tạo</button>
-    </form>
-
-    <div>
-        <%- include("layout/listToDo")%>
+        <form action="/toDoList" method="post" id="createForm">
+            <div class="container_input">
+                <p>Name</p>
+                <input type="text" id="name" name="name" >
+            </div>
+            <button class="create_btn" type="submit">Tạo</button>
+        </form>
+        
+        
+        <table id="table_List">
+            <tr>
+                <th colspan="2" style="color: white;background-color: blue;">LIST TO DO</th>
+            </tr>
+            <tr>
+                <th>STT</th>
+                <th>Name</th>
+            </tr>
+            
+            <%for(let i = 0;i<list.length;i++){%>
+                <tr>
+                        <td>
+                            <%=i+1%>
+                        </td>
+                        <td>
+                            <a href="/toDoList/<%=list[i]._id%>">
+                                <%=list[i].name%>
+                            </td>
+                        </a>
+                </tr>
+            <%}%>
+        </table>
+        
     </div>
 </body>
 

@@ -23,7 +23,8 @@ async function main() {
 // config view 
 app.set("view engine","ejs") //=> set use view engine is ejs
 app.set("views",path.join(__dirname,"/views"))
-
+//config static file
+app.use(express.static(path.join(__dirname,"public")))
 //routes
 routes(app)
 

@@ -3,6 +3,14 @@ const ToDoListController ={
     createToDoList:async(req,res)=>{
         // (POST) => (name)
         try {
+            if(req.body.name.trim()===""){
+               res.status(200).render("messCreate",{
+                "status":"Thất bại!!! . vui lòng nhập tên to Do List",
+                "pageTitle":"Status"
+                
+               }) 
+               return
+            }
             const newToList = await ToDoList.insertMany({name:req.body.name}) 
             res.status(200).render("messCreate",{
                 "pageTitle":"Status",
