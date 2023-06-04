@@ -4,7 +4,7 @@ const WorksController = require("../controller/works.js")
 
 //test
 router.post("/allWorks/test",WorksController.testQuery);
-
+// router.get("/dealine",WorksController.checkDealine)
 
 // routes /allworks
 router.get("/allWorks",WorksController.getAllWork);

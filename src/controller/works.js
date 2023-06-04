@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const {Works,ToDoList} = require("../model/model.js");
-const { json } = require("body-parser");
-const { query } = require("express");
+
+
 
 const workController = {
     // middleware check idList
@@ -67,11 +67,35 @@ const workController = {
     //[GET] (params:idList)
     getAllWorksOnDate:async(req,res)=>{
         try {
-            const toDoList = await ToDoList.findById(req.params.idList).populate("dates");            
-            res.status(200).json(toDoList.dates);
+            const toDoList = await ToDoList.findById(req.params.idList).populate("dates");  
+            function getDealine(milisecond){
+                let second = Math.floor(milisecond/1000)%60;
+                let minute = Math.floor(milisecond/1000/60)%60;
+                let hour = Math.floor(milisecond/1000/60/60)%24;
+                let day = Math.floor(milisecond/1000/60/60/24);
+                return {second,minute,hour,day}
+            }
+            for(let i = 0;i<toDoList.dates.length;i++){
+               for(let j = 0;j<toDoList.dates[i].works.length;j++){
+                    let nowTime  = new Date()
+                    let aDealine = toDoList.dates[i].works[j].time - nowTime;
+                    let dealine = getDealine(aDealine);
+                    try {
+                        
+                        const result = await Works.updateOne({"works._id":toDoList.dates[i].works[j]._id},
+                        {$set:{[`works.${j}.dealine`]:`${dealine.day}:${dealine.hour}:${dealine.minute}:${dealine.second}`
+                    }})
+                        
+                    } catch (error) {
+                        console.log("error:"+error)
+                    }
+               }
+            }     
+            const newToDoList = await ToDoList.findById(req.params.idList).populate("dates"); 
+            res.status(200).json(newToDoList);
             
         } catch (error) {
-            res.status(500).json("error")
+            res.status(500).json(`error: ${error}`)
         }
     },
     // [GET]
@@ -143,7 +167,8 @@ const workController = {
         const arr = req.query.age.split(",")
         console.log(arr);
         res.status(200).json(req.query)
-    }
+    },
+
     
 }
 

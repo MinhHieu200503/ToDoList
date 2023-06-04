@@ -32,7 +32,7 @@ const ToDoListController ={
                 "pageTitle":"Home Page"
             })
         } catch (error) {
-            res.status(500).res.json(error)           
+            res.status(500).json(error)           
         }
     },
     getAToDoList:async(req,res)=>{

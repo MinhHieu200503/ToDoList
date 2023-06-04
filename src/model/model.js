@@ -11,6 +11,11 @@ const toDoListSchema = new mongoose.Schema({
             "ref":"works",
         }
     ]
+},{
+    timestamps:{
+        createdAt:true, //=> time create
+        updatedAt:true
+    }
 })
 
 const worksSchema = new mongoose.Schema({
@@ -20,10 +25,19 @@ const worksSchema = new mongoose.Schema({
     },
     "works":[
         {
-            "time":Date,
-            "work":String
+            "time":Date, //=> time target
+            "work":String,
+            "dealine":{
+                type:String,
+                default:""
+            } 
         }
     ]
+},{
+    timestamps:{
+        createdAt:true,
+        updatedAt:true
+    }
 })
 
 const Works = mongoose.model("works",worksSchema);
