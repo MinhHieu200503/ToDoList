@@ -105,13 +105,44 @@ const workController = {
     // [GET]
     getAllWork:async(req,res)=>{
         try {
-           const list = await ToDoList.find().populate("dates")
-           let newDates = list.map((aList)=>{
-            return aList.dates
-           })
+            const listToDoList = await ToDoList.find().populate("dates");  
+            function getDealine(milisecond){
+                let second = Math.floor(milisecond/1000)%60;
+                let minute = Math.floor(milisecond/1000/60)%60;
+                let hour = Math.floor(milisecond/1000/60/60)%24;
+                let day = Math.floor(milisecond/1000/60/60/24);
+                let warning = "Còn sớm mà làm ván đi từ từ làm sau"
+                if(milisecond<0){
+                    warning = "trễ cmnr khỏi làm nữa"
+                }
+                return {second,minute,hour,day,warning,milisecond}
+        }
+        for(let k = 0;k<listToDoList.length;k++){
+            let toDoList = listToDoList[k];
+            for(let i = 0;i<toDoList.dates.length;i++){
+                for(let j = 0;j<toDoList.dates[i].works.length;j++){
+                     let nowTime  = new Date()
+                     let aDealine = toDoList.dates[i].works[j].time - nowTime;
+                     let dealine = getDealine(aDealine);
+                     try {
+                         
+                         const result = await Works.updateOne({"works._id":toDoList.dates[i].works[j]._id},
+                         {$set:{[`works.${j}.dealine`]:`${dealine.day}:${dealine.hour}:${dealine.minute}:${dealine.second}:status=>${dealine.warning}:${dealine.milisecond}`
+                     }})
+                         
+                     } catch (error) {
+                         console.log("error:"+error)
+                     }
+                }
+             }
+        }    
+        const list = await ToDoList.find().populate("dates")
+        let newDates = list.map((aList)=>{
+         return aList.dates
+        })
            res.status(200).json(newDates) 
         } catch (error) {
-            res.status(500).json("error")
+            res.status(500).json("error: "+error)
         }
     },
     // [DELETE] a date(idList,idDate)
@@ -178,36 +209,103 @@ const workController = {
     // -1 => sort createdAt descreased
     sortTime:async(req,res)=>{
         try {
-            const toDoList  = await ToDoList.find().populate("dates");
-            console.log(typeof(req.query.list))
+            let toDoList  = await ToDoList.find().populate("dates");
+            // console.log(typeof(req.query.list))
             const query = req.query.list.split(".")
             async function sortWorks(query){
                 // sort by indexWork
+                let newToDoList  
+                const querytmp = req.query.list.split(".")
+                if(querytmp[0]==1){newToDoList= await ToDoList.find().sort({index:1}).populate("dates");}
+                if(querytmp[0]==-1){newToDoList= await ToDoList.find().sort({index:-1}).populate("dates");}
+
                 if(query==-1){
-                    const newToDoList  = await ToDoList.find().sort({index:1}).populate("dates");
+                    let tmpToDos1=[];
                     for(let t of newToDoList){ // loop all toList
-                    for(let a of t.dates){ //loop all aDate on todolist
-                        let id = a._id;
-                        // console.log(a.works[0].index[0])
-                        let tmpDate = await Works.findOne({"_id":id})
-                        for( let i = 0;i<tmpDate.works.length-1;i++){ //=> loop all works on a Date to compare index
-                            for(let j = i+1;j<tmpDate.works.length;j++){  //=> bubble sort
-                                if(tmpDate.works[i].index<tmpDate.works[j].index){ 
-                                    let tmp = tmpDate.works[i];
-                                    tmpDate.works[i] = tmpDate.works[j];
-                                    tmpDate.works[j] = tmp
+                        let tmpDates1 = [];
+                        for(let a of t.dates){ //loop all aDate on todolist
+                            let id = a._id;
+                            // console.log(a.works[0].index[0])
+                            let tmpDate = await Works.findOne({"_id":id})
+                            for( let i = 0;i<tmpDate.works.length-1;i++){ //=> loop all works on a Date to compare index
+                                for(let j = i+1;j<tmpDate.works.length;j++){  //=> bubble sort
+                                    if(tmpDate.works[i].index<tmpDate.works[j].index){ 
+                                        let tmp = tmpDate.works[i];
+                                        tmpDate.works[i] = tmpDate.works[j];
+                                        tmpDate.works[j] = tmp
+                                    }
                                 }
                             }
+                            a = tmpDate
+                            
+                            // console.log(JSON.stringify(a))
+                            tmpDates1.push(a)
                         }
-                        console.log(JSON.stringify(tmpDate))
-                        a = tmpDate 
-                        await a.save()
+                        tmpToDos1.push(tmpDates1)
                     }
+                    newToDoList = tmpToDos1
+                }else if(query==1){
+                    let tmpToDos1=[];
+                    for(let t of newToDoList){ // loop all toList
+                        let tmpDates1 = [];
+                        for(let a of t.dates){ //loop all aDate on todolist
+                            let id = a._id;
+                            // console.log(a.works[0].index[0])
+                            let tmpDate = await Works.findOne({"_id":id})
+                            for( let i = 0;i<tmpDate.works.length-1;i++){ //=> loop all works on a Date to compare index
+                                for(let j = i+1;j<tmpDate.works.length;j++){  //=> bubble sort
+                                    if(tmpDate.works[i].index>tmpDate.works[j].index){ 
+                                        let tmp = tmpDate.works[i];
+                                        tmpDate.works[i] = tmpDate.works[j];
+                                        tmpDate.works[j] = tmp
+                                    }
+                                }
+                            }
+                            a = tmpDate
+                            
+                            // console.log(JSON.stringify(a))
+                            tmpDates1.push(a)
+                        }
+                        tmpToDos1.push(tmpDates1)
                     }
+                    newToDoList = tmpToDos1
                 }
                 
+                return newToDoList
             }
             //^end function sortWorks
+
+            // function update index base time deadline
+            async function updateBaseDealine(toDoList){
+                for(let t of toDoList){ // On
+                    for(let d of t.dates){ // On
+                        let arrTmp = []
+                        let length = d.works.length
+                        for(let i = 0;i<length;i++){
+                            console.log(`i = ${i}`)
+                            let k = 0;
+                            let index = 0
+                            let maxObj = d.works[k]
+                            for(let h = 0;h<d.works.length;h++){
+                                let sp1 = maxObj.dealine.split(":");
+                                let sp2 = d.works[h].dealine.split(":");
+                                if(sp1[5]<sp2[5]){
+                                    maxObj = d.works[h]
+                                    index = h
+                                }
+                                console.log(`h = ${h}`)
+                            }
+                            console.log(JSON.stringify(maxObj))
+                            d.works.splice(index,1)
+                            maxObj.index = i
+                            arrTmp.push(maxObj)
+                        } 
+                        d.works = arrTmp
+                    }
+                }
+               
+            }
+            // ^ end function updateBaseDealine
             if(query[0] == 1){
                 async function index(arr){
                     for(let i = 0;i<arr.length;i++){
@@ -222,7 +320,7 @@ const workController = {
                         date.works[i].index = i;
                         // console.log(`i = ${i}`)
                     }  
-                    console.log(date instanceof Works)
+                   
                     await date.save()
                 }
                 for(let t of toDoList){
@@ -230,15 +328,16 @@ const workController = {
                         indexWork(a)
                     }
                 }
-                await sortWorks(query[1])
-                const newToDoList  = await ToDoList.find().sort({index:1}).populate("dates");
+                // sort index base deadline increaed milisecond
+                updateBaseDealine(toDoList)
+                // sort works
+                let newToDoList  = await sortWorks(query[1])
                 res.status(200).json(newToDoList)
             }
             else if(query[0]==-1){
                 async function index(arr){
                     for(let i = 0;i<arr.length;i++){
                         arr[i].index = i;
-                        // console.log(`i = ${i}`)
                         await arr[i].save()
                     }  
                 }
@@ -254,11 +353,11 @@ const workController = {
                     for(let a of t.dates){
                         indexWork(a)
                     }
-                } 
+                }
+                // sort index base deadline increaed milisecond
+                updateBaseDealine(toDoList)
                 // sort works
-                await sortWorks(query[1])
-                
-                const newToDoList2  = await ToDoList.find().sort({index:-1}).populate("dates");
+                let newToDoList2  = await sortWorks(query[1])
 
                 res.status(200).json(newToDoList2)
             }
