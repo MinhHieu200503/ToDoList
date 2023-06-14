@@ -17,7 +17,7 @@ main().then(()=>{
 }).catch(err => console.log(err));
 
 async function main() {
-  await mongoose.connect('mongodb+srv://ldmhieudev:12345@cluster0.zonvzzc.mongodb.net/?retryWrites=true&w=majority');
+  await mongoose.connect('mongodb://127.0.0.1:27017/toDoList');
 }
 
 // config view 
