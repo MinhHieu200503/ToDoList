@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const {Works,ToDoList} = require("../model/model.js");
+const {Works,ToDoList} = require("../model/tasks.js");
 
 
 

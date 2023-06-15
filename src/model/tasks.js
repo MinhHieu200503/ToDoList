@@ -48,7 +48,7 @@ const worksSchema = new mongoose.Schema({
     }
 })
 
-const Works = mongoose.model("works",worksSchema);
-const ToDoList = mongoose.model("toDoList",toDoListSchema)
+const Works = mongoose.model("taskDate",worksSchema);
+const ToDoList = mongoose.model("taskList",toDoListSchema)
 
 module.exports = {Works,ToDoList}

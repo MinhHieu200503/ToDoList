@@ -12,6 +12,7 @@ router.get("/allWorks",WorksController.getAllWork);
 //routes /:idList
 //# [POST]
 //* addWorks => params(:idList)
+router.get("/:idList/CreateDate",WorksController.formCreateDate);
 router.post("/:idList/works",WorksController.checkIdList,WorksController.configTime,WorksController.addWorks);
 
 //# [DELETE]
@@ -28,7 +29,7 @@ router.put("/:idList/updateName",WorksController.checkIdList,WorksController.upd
 router.put("/:idList/:idDate",WorksController.checkIdList,WorksController.configTime,WorksController.updateDate)
 //# [GET]
 //*getAllWorksOnDate => params(:idList)
-router.get("/:idList/works",WorksController.checkIdList,WorksController.getAllWorksOnDate);
+router.get("/:idList/:idDate",WorksController.checkIdList,WorksController.getAllWorksOnDate);
 //*getAToDoList => params(:idList)
 router.get("/:idList",ToDoListController.getAToDoList);
 

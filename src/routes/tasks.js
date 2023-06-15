@@ -1,6 +1,6 @@
 const router = require("express").Router();
-const ToDoListController = require("../controller/toDoList.js");
-const WorksController = require("../controller/works.js")
+const ToDoListController = require("../controller/taskToDo");
+const WorksController = require("../controller/taskWork")
 
 //test
 router.post("/allWorks/test",WorksController.testQuery);

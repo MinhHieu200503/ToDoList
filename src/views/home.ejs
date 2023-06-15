@@ -5,50 +5,119 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/home.css">
     <title>
         <%=pageTitle%>
     </title>
 </head>
 
 <body>
-    <div id="container">
-        <h3 class="formTitle">
-            Tạo To Do List
-        </h3>
-        <form action="/toDoList" method="post" id="createForm">
-            <div class="container_input">
-                <p>Name</p>
-                <input type="text" id="name" name="name" >
+    <div class="container">
+        <form method="post" id="formAdd" name="myForm" onsubmit="doSubmit()">
+            <div class="form_input">
+                <p class="form_elementName">Name To Do List:</p>
+                <input type="text" id="txtName" class="formInputText" name="name">
             </div>
-            <button class="create_btn" type="submit">Tạo</button>
+
+            <div class="form_input">
+                <button type="button" class="formChoose" id = "idTask"  >Task</button>
+                <button type="button" class="formChoose" id = "idToDo"  >To Do</button>
+            </div>
+            <!-- <div class="form_input">
+                <p class="form_elementName">Chú thích:</p>
+                <textarea name="description" id="idDes" cols="30" rows="10"></textarea>
+            </div>
+            <div class="form_input">
+                <p class="form_elementName">Upload file:</p>
+                <input type="file" id="idFile" class="formFile">
+            </div> -->
+
+            <div class="form_input">
+                <button type="submit">DONE</button>
+            </div>
         </form>
-        
-        
-        <table id="table_List">
-            <tr>
-                <th colspan="2" style="color: white;background-color: blue;">LIST TO DO</th>
-            </tr>
-            <tr>
-                <th>STT</th>
-                <th>Name</th>
-            </tr>
+        <div class="show">
             
-            <%for(let i = 0;i<list.length;i++){%>
+            <table class="table_List">
                 <tr>
-                        <td>
-                            <%=i+1%>
-                        </td>
-                        <td>
-                            <a href="/toDoList/<%=list[i]._id%>">
-                                <%=list[i].name%>
-                            </td>
-                        </a>
+                    <th colspan="2" style="color: white;background-color: blue;">LIST TASK</th>
                 </tr>
-            <%}%>
-        </table>
-        
+                <tr>
+                    <th>STT</th>
+                    <th>Name</th>
+                </tr>
+                
+                <%for(let i = 0;i<task.length;i++){%>
+                    <tr>
+                            <td>
+                                <%=i+1%>
+                            </td>
+                            <td>
+                                <a href="/task/<%=task[i]._id%>">
+                                    <%=task[i].name%>
+                                </td>
+                            </a>
+                    </tr>
+                <%}%>
+            </table>
+            
+            <table class="table_List">
+                <tr>
+                    <th colspan="2" style="color: white;background-color: blue;">LIST TO DO</th>
+                </tr>
+                <tr>
+                    <th>STT</th>
+                    <th>Name</th>
+                </tr>
+                
+                <%for(let i = 0;i<list.length;i++){%>
+                    <tr>
+                            <td>
+                                <%=i+1%>
+                            </td>
+                            <td>
+                                <a href="/toDoList/<%=list[i]._id%>">
+                                    <%=list[i].name%>
+                                </td>
+                            </a>
+                    </tr>
+                <%}%>
+            </table>
+
+        </div>
     </div>
+
+    <script >
+            
+            
+
+        let idToDo = document.getElementById("idToDo")
+        let idTask = document.getElementById("idTask")
+        let choose  = -1
+        idToDo.addEventListener('click',(e)=>{
+            
+            idToDo.focus()
+            idToDo.style.backgroundColor = 'red'
+            idTask.style.backgroundColor = 'white'
+            idTask.blur()
+            if(document.activeElement === idToDo) choose = 1
+        })
+        idTask.addEventListener('click',(e)=>{
+            idTask.focus()
+            idTask.style.backgroundColor = 'green'
+            idToDo.style.backgroundColor = 'white'
+            idToDo.blur()
+            if(document.activeElement !== idToDo) choose = 0
+            
+        })
+
+        function doSubmit(){
+            let myForm = document.getElementById('formAdd')
+            if(choose==1) myForm.action = './toDoList'
+            if(choose==0) myForm.action = './task'
+            return true
+        }
+    </script>
 </body>
 
 </html>

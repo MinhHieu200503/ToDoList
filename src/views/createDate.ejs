@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link type="text/css" rel="stylesheet" href="/css/createDate.css">
+    <title>Create Date</title>
+</head>
+<body>
+    <div class="container">
+        <form method="post" action="./works" id="myForm">
+            <p class="label">Tên To Do:<%=name%></p>
+            <div class="container_input">
+                <p class="label">Ngày:</p>
+                <input type="date" name="date"  id="myDate">
+            </div>
+            <div class="container_input">
+                <table>
+                    <header>
+                        <tr>
+                            <th>time</th>
+                            <th>description</th>
+                            <th>modify</th>
+                        </tr>
+                    </header>
+                    <tbody id="content">
+                        <tr>
+                            <td><input type="time" class="txtTime"></td>
+                            <td><textarea  class="description"  cols="30" rows="10"></textarea></td>
+                            <td>
+                                <div class="addBtn" style="width: 30px;height: 30px;border: 1px solid black; border-radius: 50%;text-align: center;line-height: 30px;">+</div>
+                                <div class="removeBtn" style="width: 30px;height: 30px;border: 1px solid black; border-radius: 50%;text-align: center;line-height: 30px;">-</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    
+                </table>
+            </div>
+
+            <div class="container_input">
+                <p class="label">Nhập file</p>
+                <input type="file">
+            </div>
+            <button type="submit">Save</button>
+        </form>
+    </div>
+    <script>
+        let addBtn = document.getElementsByClassName('addBtn')
+        let content = document.getElementById('content');
+        let txtTime = document.getElementsByClassName('txtTime')
+        let description = document.getElementsByClassName('description')
+        addBtn[0].addEventListener('click',(e)=>{
+                console.log("hello")
+                
+                let newNode = document.createElement('tr')
+                newNode.innerHTML =`
+                            <td><input type="time" class="txtTime"></td>
+                            <td><textarea  class="description"   cols="30" rows="10"></textarea></td>
+                                <td>
+                                    <div class="addBtn" style="width: 30px;height: 30px;border: 1px solid black; border-radius: 50%;text-align: center;line-height: 30px;">+</div>
+                                    <div class="removeBtn" style="width: 30px;height: 30px;border: 1px solid black; border-radius: 50%;text-align: center;line-height: 30px;">-</div>
+                                </td>
+                            `
+                content.appendChild(newNode)
+            })
+        
+        let myForm = document.getElementById('myForm');
+        let myDate = document.getElementById('myDate')
+        let url = window.location.href
+        let urlElement = url.split("/")
+        let idList = urlElement[4]
+        myForm.onsubmit = async(e)=>{
+            e.preventDefault()
+            let tmpObj = {
+                date:myDate.value,
+                works:[]
+            }
+
+            for(let i = 0;i<txtTime.length;i++){
+                tmpObj.works[i] = {
+                    time:txtTime[i].value,
+                    work:description[i].value
+                }
+            }
+            // console.log(tmpObj)
+
+            await fetch(`http://localhost:3000/toDoList/${idList}/works`,{
+                method:'POST',
+                headers: {'Content-Type': 'application/json'},
+                body:JSON.stringify(tmpObj)
+            })
+                
+        }
+        
+    </script>
+</body>
+</html>

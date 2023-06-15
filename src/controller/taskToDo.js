@@ -1,5 +1,4 @@
-const {Works,ToDoList} = require("../model/model.js");
-const Task = require("../model/tasks.js") 
+const {Works,ToDoList} = require("../model/tasks.js");
 const ToDoListController ={
     createToDoList:async(req,res)=>{
         // (POST) => (name)
@@ -28,12 +27,11 @@ const ToDoListController ={
     getAllToDoList:async(req,res)=>{
         try {
             const list = await ToDoList.find();
-            const task = await Task.ToDoList.find()
             console.log(list)
             res.status(200).render("home",{
                 "list":list,
-                "task":task,
-                "pageTitle":"Home Page"
+                "pageTitle":"Home Page",
+                
             })
         } catch (error) {
             res.status(500).json(error)           
@@ -41,13 +39,8 @@ const ToDoListController ={
     },
     getAToDoList:async(req,res)=>{
         try {
-            const aToDo = await ToDoList.findById(req.params.idList).populate('dates');
-            console.log(aToDo)
-            res.status(200).render("toDo",{
-                "pageTitle":`${aToDo.name}`,
-                "toDo":aToDo,
-                "signal":"-"
-            })
+            const aToDo = await ToDoList.findById(req.params.idList);
+            res.status(200).json(aToDo)
         } catch (error) {
             res.status(500).json(error)
         }

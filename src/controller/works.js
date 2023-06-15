@@ -22,6 +22,7 @@ const workController = {
     // middleware config time in work: input:hh:mm => output:yyyy/mm/ddThh:mm:ssZ
     configTime:async(req,res,next)=>{ //=> config hh:mm
         try {
+            // console.log(req)
             let configTime = req.body.works.map((work)=>{
                 let time = work.time.split(":");
                 //check time format hh:mm with h >=0 and <=23&&mm>=0 and <=59
@@ -49,7 +50,7 @@ const workController = {
             
             next()
         } catch (error) {
-            res.status(500).json("error config time")
+            res.status(500).json("error config time"+error)
             return 
         }
     },
@@ -63,6 +64,22 @@ const workController = {
             res.status(500).json(error + "\nadd works wrong")
         }
     },
+
+    formCreateDate:async(req,res)=>{
+        try {
+            const todo = await ToDoList.findById(req.params.idList).populate("dates")
+            res.status(200).render("createDate",{
+                name:todo.name,
+                pageTitle:"Create Date",
+                todo:todo,
+                idList:req.params.idList
+            })
+        } catch (error) {
+            res.status(500).json("error: "+error)
+
+        }
+    },
+
     //[GET] (params:idList)
     getAllWorksOnDate:async(req,res)=>{
         try {
@@ -95,7 +112,22 @@ const workController = {
                }
             }     
             const newToDoList = await ToDoList.findById(req.params.idList).populate("dates"); 
-            res.status(200).json(newToDoList);
+            let findDate = null;
+                for(d of newToDoList.dates){
+                
+                    if(d.id == req.params.idDate){
+                        findDate = d
+                    }
+                }
+            formatDate = ("0"+findDate.date.getDate()).slice(-2)
+            formatMonth = ("0"+findDate.date.getMonth()).slice(-2)
+            res.status(200).render('work',{
+                pageTitle:`${findDate._id}`,
+                works:findDate.works,
+                name:newToDoList.name,
+                
+                date:`${findDate.date.getFullYear()}-${formatMonth}-${formatDate}`
+            });
             
         } catch (error) {
             res.status(500).json(`error: ${error}`)

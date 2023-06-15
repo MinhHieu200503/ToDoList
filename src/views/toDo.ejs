@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="stylesheet" href="./css/toDo.css" type="text/css"> -->
+    <link type="text/css" rel="stylesheet" href="/css/toDo.css">
+    <title><%=pageTitle%></title>
+</head>
+<body>
+    <div class="container">
+        <form action="" method="post" id = "form">
+            <p class="label">Name To Do: <%=toDo.name%> </p> 
+            <p class="label">Các ngày có việc:</p>
+            <div class="container_listDate">
+                <table id="date">
+                    <header >
+                        <tr id="header">
+                            <th>STT</th>
+                            <th>Date</th>
+                            <th id="addSignal" style="width: 20px; height: 20px; border: 1px solid black;border-radius: 50%;"><a href="./<%=toDo._id%>/CreateDate">+</a></th>
+                        </tr>
+                    </header>
+                    <body>
+                        <%for(let i = 0;i<toDo.dates.length;i++){%>
+                            <tr class="tableRow">
+                                
+                                    <td><%=i+1%></td>
+                                    <td><a href="./<%=toDo._id%>/<%=toDo.dates[i]._id%>"><%=toDo.dates[i].date.getDate()%><%=signal%><%=toDo.dates[i].date.getMonth()+1%><%=signal%><%=toDo.dates[i].date.getFullYear()%></a></td>
+                                
+                            </tr>
+                        <%}%>
+                    </body>
+                </table>
+            </div>
+        </form>
+    </div>
+    <script>
+        // let tableRow = document.getElementsByClassName('tableRow');
+        // for(row of tableRow){
+        //     row.addEventListener('click',(e)=>{
+                
+        //     })   
+        // }
+    </script>
+</body>
+</html>
